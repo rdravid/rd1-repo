@@ -1,5 +1,7 @@
 package com.plivo.msgapi.model;
 
+import java.sql.Timestamp;
+
 import javax.xml.bind.annotation.XmlRootElement;
 
 //@XmlRootElement
@@ -7,15 +9,23 @@ public class Message {
 
 	private long msgId = 0;
 	private String msgBody = null;
+	private Timestamp msgTimeStamp = null;
 	
 	
+	public Timestamp getMsgTimeStamp() {
+		return msgTimeStamp;
+	}
+	public void setMsgTimeStamp(Timestamp msgTimeStamp) {
+		this.msgTimeStamp = msgTimeStamp;
+	}
 	public Message() {
 		super();
 	}
-	public Message(long msgId, String msgBody) {
+	public Message(long msgId, String msgBody,Timestamp ts) {
 		super();
 		this.msgId = msgId;
 		this.msgBody = msgBody;
+		this.msgTimeStamp = ts;
 	}
 	public long getMsgId() {
 		return msgId;
