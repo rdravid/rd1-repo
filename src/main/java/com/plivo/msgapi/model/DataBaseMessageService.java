@@ -19,35 +19,41 @@ public class DataBaseMessageService {
 	private  Connection mConnection = null;
 	
 	public DataBaseMessageService() {
-		// TODO Auto-generated constructor stub
-		try {
-			createMessageTable();
-		} catch (URISyntaxException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
 	}
 	
-	private  void createMessageTable() throws URISyntaxException, SQLException {
+	
+	
+	
+	public void createMessageTable() throws URISyntaxException, SQLException {
 		
 		if(null == mConnection) {
 			mConnection = getConnection();
 		}
         
-		String dummy="'message dummy'";
+		//String dummy="'message dummy'";
 		Statement stmt = mConnection.createStatement();
-        stmt.executeUpdate("DROP TABLE IF EXISTS messages");
-        stmt.executeUpdate("CREATE TABLE messages (msg_id serial PRIMARY KEY, msg_body VARCHAR (50) NOT NULL, created_on timestamp)");
-        stmt.executeUpdate("INSERT INTO messages(msg_body,created_on) VALUES ("+dummy+", now())");
+        //stmt.executeUpdate("DROP TABLE IF EXISTS messages");
+        stmt.executeUpdate("CREATE TABLE IF NOT EXISTS messages (msg_id serial PRIMARY KEY, msg_body VARCHAR (100) NOT NULL, created_on timestamp)");
+        System.out.println("messages table created!!!");
+       /* stmt.executeUpdate("INSERT INTO messages(msg_body,created_on) VALUES ("+dummy+", now())");
         ResultSet rs = stmt.executeQuery("SELECT * FROM messages");
         while (rs.next()) {
             System.out.println("Read from DB: " + rs.getString("msg_body") + " " + rs.getTimestamp("created_on"));
-        }
+        }*/
 	}
+	
+	public void dropMessageTable() throws URISyntaxException, SQLException {
+		
+		if(null == mConnection) {
+			mConnection = getConnection();
+		}
+ 		
+		Statement stmt = mConnection.createStatement();
+        stmt.executeUpdate("DROP TABLE IF EXISTS messages");
+        System.out.println("messages table dropped!!!");
+        
+	}
+
 	
 	
 	public List<Message> getAllMessage()  {
@@ -73,6 +79,31 @@ public class DataBaseMessageService {
 		}
         return arrList;
 	}
+	
+	public List<Message> getAllMessage(long start, long size)  {
+		
+		ArrayList<Message> arrList = null;
+		try {
+		if(null == mConnection) {
+			mConnection = getConnection();
+		}
+
+        Statement stmt = mConnection.createStatement();   
+        ResultSet rs = stmt.executeQuery("SELECT * FROM messages order by msg_id offset " + start + " limit " + size);
+        arrList = new ArrayList<>();
+        while (rs.next()) {
+            System.out.println("Read from DB: " + rs.getString("msg_body") + " " + rs.getTimestamp("created_on"));
+            arrList.add(new Message(rs.getInt("msg_id"),rs.getString("msg_body"),rs.getTimestamp("created_on")));
+            
+        }
+		}catch(URISyntaxException e) {
+			e.printStackTrace();
+		}catch(SQLException e) {
+			e.printStackTrace();
+		}
+        return arrList;
+	}
+
 	
 	public Message getMessage(long id) {
 		

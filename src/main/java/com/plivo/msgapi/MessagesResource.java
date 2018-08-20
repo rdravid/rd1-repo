@@ -12,6 +12,7 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
 import com.plivo.msgapi.model.DataBaseMessageService;
@@ -30,13 +31,20 @@ public class MessagesResource {
 	//@RolesAllowed("ADMIN")
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	public List<Message> getMessages() {		
+	public List<Message> getMessages(@QueryParam("start") long start,
+									 @QueryParam("size") long size) {		
+		
+		if(start > 0 && size > 0) {
+			return mDBMessageService.getAllMessage(start, size);
+		}
 		
 		return mDBMessageService.getAllMessage();
 		
 		//return mLocalMessageService.getAllMessages();
 		//return mLocalMessageService.addDummyMessages();
 	}
+
+	
 
 	@GET
 	@Path("/{messageId}")
